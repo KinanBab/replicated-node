@@ -45,14 +45,14 @@ var deadlines = {};
 manager.listen('bidding', function (id, message) {
   message = JSON.parse(message);
   for (var bidName in message) {
-    if (!message.hasOwnProperty(bidName)) continue;
+    if (!message.hasOwnProperty(bidName) || message[bidName] == null) continue;
 
     if (deadlines[bidName] != null && deadlines[bidName] != message[bidName]) {
       console.log('Warning! Bid ', bidName, ' created in multiple sessions!');
       deadlines[bidName] = deadlines[bidName] > message[bidName] ? deadlines[bidName] : message[bidName];
     } else {
       console.log('Bid ', bidName, ' announced!');
-      deadlines[bidName] = bidName;
+      deadlines[bidName] = message[bidName];
     }
   }
 });
@@ -69,9 +69,9 @@ manager.start();
 
 // Display instructions to users:
 console.log('Available commands:');
-console.log('\t new <bidName> <bidDuration in milliseconds : integer>       create a new bid');
-console.log('\t read <bidName>                                              prints result of bid indicating whether it is the final result or not');
-console.log('\t bid <bidName> <bidderName> <amount : integer>               prints result of bid indicating whether it is the final result or not');
+console.log('    new <bidName> <bidDuration in milliseconds : integer>       create a new bid');
+console.log('    read <bidName>                                              prints result of bid indicating whether it is the final result or not');
+console.log('    bid <bidName> <bidderName> <amount : integer>               prints result of bid indicating whether it is the final result or not');
 
 
 // Read bids
@@ -89,7 +89,7 @@ rl.on('line', function(line) {
     var bidDeadline = parseInt(command[2]) + new Date().getTime();
     if (deadlines[bidName] == null) {
       deadlines[bidName] = bidDeadline;
-      console.log('Ok!');
+      console.log('Ok!', bidDeadline);
 
       // broadcast bid name and deadline
       var message = JSON.stringify(deadlines);
