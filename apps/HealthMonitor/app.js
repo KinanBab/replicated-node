@@ -16,8 +16,8 @@ var my_port = parseInt(my_host.substring(my_host.indexOf(':') + 1));
 delete hosts[me];
 
 // Initialize sub-modules
-var system = new System();
-var manager = new Manager(system, me, my_port, hosts);
+var system = new System({ 'id': me, 'port': my_port, 'remotes': hosts });
+var manager = new Manager(system);
 var liveness = new Liveness(system);
 
 // Monitor Health
